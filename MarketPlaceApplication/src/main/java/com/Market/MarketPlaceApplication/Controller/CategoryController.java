@@ -10,12 +10,18 @@ import java.util.List;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-    private final CategoryRepository repo;
-    public CategoryController(CategoryRepository repo) { this.repo = repo; }
+    private final CategoryRepository categoryRepository;
+    public CategoryController(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     @GetMapping
-    public List<Category> list() { return repo.findAll(); }
+    public List<Category> list() {
+        return categoryRepository.findAll();
+    }
 
     @PostMapping
-    public Category create(@RequestBody Category c) { return repo.save(c); }
+    public Category create(@RequestBody Category category) {
+        return categoryRepository.save(category);
+    }
 }

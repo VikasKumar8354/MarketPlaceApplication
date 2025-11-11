@@ -16,13 +16,13 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
-    private final UserRepository userRepo;
-    private final ProductRepository productRepo;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
-    public OrderController(OrderService orderService, UserRepository userRepo, ProductRepository productRepo) {
+    public OrderController(OrderService orderService, UserRepository userRepository, ProductRepository productRepository) {
         this.orderService = orderService;
-        this.userRepo = userRepo;
-        this.productRepo = productRepo;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
     @PostMapping

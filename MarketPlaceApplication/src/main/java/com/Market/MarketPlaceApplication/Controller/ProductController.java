@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
-    private final CategoryRepository categoryRepo;
-    private final UserRepository userRepo;
+    private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
-    public ProductController(ProductService productService, CategoryRepository categoryRepo, UserRepository userRepo) {
+    public ProductController(ProductService productService, CategoryRepository categoryRepository, UserRepository userRepository) {
         this.productService = productService;
-        this.categoryRepo = categoryRepo;
-        this.userRepo = userRepo;
+        this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -43,7 +43,7 @@ public class ProductController {
                                     @RequestBody CreateProductDto dto) {
         Category cat = null;
         if (dto.getCategoryId() != null) {
-            cat = categoryRepo.findById(dto.getCategoryId()).orElse(null);
+            cat = categoryRepository.findById(dto.getCategoryId()).orElse(null);
         }
         Product p = Product.builder()
                 .title(dto.getTitle())
@@ -70,7 +70,7 @@ public class ProductController {
                 .imageUrl(dto.getImageUrl())
                 .build();
         if (dto.getCategoryId() != null) {
-            Category cat = categoryRepo.findById(dto.getCategoryId()).orElse(null);
+            Category cat = categoryRepository.findById(dto.getCategoryId()).orElse(null);
             updated.setCategory(cat);
         }
         Product res = productService.updateProduct(actingUserId, id, updated);
