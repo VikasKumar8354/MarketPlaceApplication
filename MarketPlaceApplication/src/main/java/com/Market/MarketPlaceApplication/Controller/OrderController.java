@@ -25,14 +25,14 @@ public class OrderController {
         this.productRepository = productRepository;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> create(@RequestParam Long buyerId, @RequestBody List<OrderItem> items) {
         // buyerId is the user placing order (no auth)
         Order order = orderService.createOrder(buyerId, items);
         return ResponseEntity.ok(order);
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public List<Order> listAll() {
         return orderService.listAll();
     }

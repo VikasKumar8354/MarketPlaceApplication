@@ -25,7 +25,7 @@ public class ProductController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public Page<Product> list(@RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size) {
         return productService.listAll(PageRequest.of(page, size));
@@ -38,7 +38,7 @@ public class ProductController {
         return productService.findByVendor(vendorId, PageRequest.of(page, size));
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> create(@RequestHeader("X-User-Id") Long actingUserId,
                                     @RequestBody CreateProductDto dto) {
         Category cat = null;
@@ -58,7 +58,7 @@ public class ProductController {
         return ResponseEntity.ok(created);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestHeader("X-User-Id") Long actingUserId,
                                     @PathVariable Long id,
                                     @RequestBody CreateProductDto dto) {
