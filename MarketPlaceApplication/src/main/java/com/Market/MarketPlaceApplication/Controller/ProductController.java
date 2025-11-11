@@ -1,9 +1,14 @@
 package com.Market.MarketPlaceApplication.Controller;
 
+import com.Market.MarketPlaceApplication.DTOs.CreateProductDto;
+import com.Market.MarketPlaceApplication.Model.Category;
 import com.Market.MarketPlaceApplication.Model.Product;
 import com.Market.MarketPlaceApplication.Repository.CategoryRepository;
+import com.Market.MarketPlaceApplication.Repository.UserRepository;
 import com.Market.MarketPlaceApplication.Service.ProductService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,24 +16,71 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
-    private final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepo;
+    private final UserRepository userRepo;
 
-    public ProductController(ProductService productService, CategoryRepository categoryRepository) {
+    public ProductController(ProductService productService, CategoryRepository categoryRepo, UserRepository userRepo) {
         this.productService = productService;
-        this.categoryRepository = categoryRepository;
+        this.categoryRepo = categoryRepo;
+        this.userRepo = userRepo;
     }
 
-    @GetMapping("/list")
+    @GetMapping
     public Page<Product> list(@RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size) {
-        return productService.listAll(page, size);
+        return productService.listAll(PageRequest.of(page, size));
     }
 
-    @PostMapping("/create")
-    public Product create(@RequestBody Product product) {
-        return productService.save(product); }
+    @GetMapping("/vendor/{vendorId}")
+    public Page<Product> listByVendor(@PathVariable Long vendorId,
+                                      @RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        return productService.findByVendor(vendorId, PageRequest.of(page, size));
+    }
 
-    @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable Long id) {
-        productService.delete(id); }
+    @PostMapping
+    public ResponseEntity<?> create(@RequestHeader("X-User-Id") Long actingUserId,
+                                    @RequestBody CreateProductDto dto) {
+        Category cat = null;
+        if (dto.getCategoryId() != null) {
+            cat = categoryRepo.findById(dto.getCategoryId()).orElse(null);
+        }
+        Product p = Product.builder()
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .price(dto.getPrice())
+                .stock(dto.getStock())
+                .imageUrl(dto.getImageUrl())
+                .category(cat)
+                .build();
+
+        Product created = productService.createProduct(actingUserId, p);
+        return ResponseEntity.ok(created);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@RequestHeader("X-User-Id") Long actingUserId,
+                                    @PathVariable Long id,
+                                    @RequestBody CreateProductDto dto) {
+        Product updated = Product.builder()
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .price(dto.getPrice())
+                .stock(dto.getStock())
+                .imageUrl(dto.getImageUrl())
+                .build();
+        if (dto.getCategoryId() != null) {
+            Category cat = categoryRepo.findById(dto.getCategoryId()).orElse(null);
+            updated.setCategory(cat);
+        }
+        Product res = productService.updateProduct(actingUserId, id, updated);
+        return ResponseEntity.ok(res);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@RequestHeader("X-User-Id") Long actingUserId,
+                                    @PathVariable Long id) {
+        productService.deleteProduct(actingUserId, id);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -3,8 +3,10 @@ package com.Market.MarketPlaceApplication.Controller;
 import com.Market.MarketPlaceApplication.Model.Order;
 import com.Market.MarketPlaceApplication.Model.OrderItem;
 import com.Market.MarketPlaceApplication.Model.User;
+import com.Market.MarketPlaceApplication.Repository.ProductRepository;
 import com.Market.MarketPlaceApplication.Repository.UserRepository;
 import com.Market.MarketPlaceApplication.Service.OrderService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,19 +16,29 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
-    private final UserRepository userRepository;
+    private final UserRepository userRepo;
+    private final ProductRepository productRepo;
 
-    public OrderController(OrderService orderService, UserRepository userRepository) {
+    public OrderController(OrderService orderService, UserRepository userRepo, ProductRepository productRepo) {
         this.orderService = orderService;
-        this.userRepository = userRepository;
+        this.userRepo = userRepo;
+        this.productRepo = productRepo;
     }
 
-    @GetMapping("/list")
-    public List<Order> list() { return orderService.listAll(); }
+    @PostMapping
+    public ResponseEntity<?> create(@RequestParam Long buyerId, @RequestBody List<OrderItem> items) {
+        // buyerId is the user placing order (no auth)
+        Order order = orderService.createOrder(buyerId, items);
+        return ResponseEntity.ok(order);
+    }
 
-    @PostMapping("/orderBook")
-    public Order create(@RequestParam Long userId, @RequestBody List<OrderItem> items) {
-        User buyer = userRepository.findById(userId).orElseThrow();
-        return orderService.createOrder(buyer, items);
+    @GetMapping
+    public List<Order> listAll() {
+        return orderService.listAll();
+    }
+
+    @GetMapping("/buyer/{buyerId}")
+    public List<Order> listByBuyer(@PathVariable Long buyerId) {
+        return orderService.listByBuyer(buyerId);
     }
 }

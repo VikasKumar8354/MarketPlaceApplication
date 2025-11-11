@@ -6,6 +6,7 @@ import com.Market.MarketPlaceApplication.Model.Product;
 import com.Market.MarketPlaceApplication.Model.User;
 import com.Market.MarketPlaceApplication.Repository.OrderRepository;
 import com.Market.MarketPlaceApplication.Repository.ProductRepository;
+import com.Market.MarketPlaceApplication.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -17,29 +18,31 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
     }
 
-    public Order createOrder(User buyer, List<OrderItem> items) {
+    public Order createOrder(Long buyerId, List<OrderItem> items) {
+        User buyer = userRepository.findById(buyerId).orElseThrow();
         double total = 0;
         List<OrderItem> persisted = new ArrayList<>();
+        for (OrderItem it : items) {
+            Product p = productRepository.findById(it.getProduct().getId()).orElseThrow();
+            if (p.getStock() < it.getQuantity()) throw new RuntimeException("Insufficient stock for: " + p.getTitle());
+            p.setStock(p.getStock() - it.getQuantity());
+            productRepository.save(p);
 
-        for (OrderItem item : items) {
-            Product product = productRepository.findById(item.getProduct().getId()).orElseThrow();
-            if (product.getStock() < item.getQuantity()) throw new RuntimeException("Not enough stock");
-            product.setStock(product.getStock() - item.getQuantity());
-            productRepository.save(product);
-
-            OrderItem newItem = OrderItem.builder()
-                    .product(product)
-                    .quantity(item.getQuantity())
-                    .price(product.getPrice())
+            OrderItem copy = OrderItem.builder()
+                    .product(p)
+                    .quantity(it.getQuantity())
+                    .price(p.getPrice())
                     .build();
-            persisted.add(newItem);
-            total += product.getPrice() * item.getQuantity();
+            persisted.add(copy);
+            total += p.getPrice() * it.getQuantity();
         }
 
         Order order = Order.builder()
@@ -54,5 +57,10 @@ public class OrderService {
 
     public List<Order> listAll() {
         return orderRepository.findAll();
+    }
+
+    public List<Order> listByBuyer(Long buyerId) {
+        User buyer = userRepository.findById(buyerId).orElseThrow();
+        return orderRepository.findByBuyer(buyer);
     }
 }
