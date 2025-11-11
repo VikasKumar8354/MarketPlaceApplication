@@ -41,20 +41,20 @@ public class ProductController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestHeader("X-User-Id") Long actingUserId,
                                     @RequestBody CreateProductDto dto) {
-        Category cat = null;
+        Category category = null;
         if (dto.getCategoryId() != null) {
-            cat = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+            category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
         }
-        Product p = Product.builder()
+        Product product = Product.builder()
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .price(dto.getPrice())
                 .stock(dto.getStock())
                 .imageUrl(dto.getImageUrl())
-                .category(cat)
+                .category(category)
                 .build();
 
-        Product created = productService.createProduct(actingUserId, p);
+        Product created = productService.createProduct(actingUserId, product);
         return ResponseEntity.ok(created);
     }
 
@@ -70,11 +70,11 @@ public class ProductController {
                 .imageUrl(dto.getImageUrl())
                 .build();
         if (dto.getCategoryId() != null) {
-            Category cat = categoryRepository.findById(dto.getCategoryId()).orElse(null);
-            updated.setCategory(cat);
+            Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+            updated.setCategory(category);
         }
-        Product res = productService.updateProduct(actingUserId, id, updated);
-        return ResponseEntity.ok(res);
+        Product product = productService.updateProduct(actingUserId, id, updated);
+        return ResponseEntity.ok(product);
     }
 
     @DeleteMapping("/{id}")
