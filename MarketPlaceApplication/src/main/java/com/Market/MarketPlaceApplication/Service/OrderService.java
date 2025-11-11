@@ -31,18 +31,18 @@ public class OrderService {
         double total = 0;
         List<OrderItem> persisted = new ArrayList<>();
         for (OrderItem it : items) {
-            Product p = productRepository.findById(it.getProduct().getId()).orElseThrow();
-            if (p.getStock() < it.getQuantity()) throw new RuntimeException("Insufficient stock for: " + p.getTitle());
-            p.setStock(p.getStock() - it.getQuantity());
-            productRepository.save(p);
+            Product product = productRepository.findById(it.getProduct().getId()).orElseThrow();
+            if (product.getStock() < it.getQuantity()) throw new RuntimeException("Insufficient stock for: " + product.getTitle());
+            product.setStock(product.getStock() - it.getQuantity());
+            productRepository.save(product);
 
             OrderItem copy = OrderItem.builder()
-                    .product(p)
+                    .product(product)
                     .quantity(it.getQuantity())
-                    .price(p.getPrice())
+                    .price(product.getPrice())
                     .build();
             persisted.add(copy);
-            total += p.getPrice() * it.getQuantity();
+            total += product.getPrice() * it.getQuantity();
         }
 
         Order order = Order.builder()
