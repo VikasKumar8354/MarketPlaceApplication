@@ -2,7 +2,6 @@ package com.Market.MarketPlaceApplication.Controller;
 
 import com.Market.MarketPlaceApplication.Model.Order;
 import com.Market.MarketPlaceApplication.Model.OrderItem;
-import com.Market.MarketPlaceApplication.Model.User;
 import com.Market.MarketPlaceApplication.Repository.ProductRepository;
 import com.Market.MarketPlaceApplication.Repository.UserRepository;
 import com.Market.MarketPlaceApplication.Service.OrderService;
