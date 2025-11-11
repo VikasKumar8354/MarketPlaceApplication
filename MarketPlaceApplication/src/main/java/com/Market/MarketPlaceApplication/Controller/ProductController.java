@@ -25,19 +25,6 @@ public class ProductController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/list")
-    public Page<Product> list(@RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "10") int size) {
-        return productService.listAll(PageRequest.of(page, size));
-    }
-
-    @GetMapping("/vendor/{vendorId}")
-    public Page<Product> listByVendor(@PathVariable Long vendorId,
-                                      @RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size) {
-        return productService.findByVendor(vendorId, PageRequest.of(page, size));
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestHeader("X-User-Id") Long actingUserId,
                                     @RequestBody CreateProductDto dto) {
@@ -57,6 +44,20 @@ public class ProductController {
         Product created = productService.createProduct(actingUserId, product);
         return ResponseEntity.ok(created);
     }
+
+    @GetMapping("/list")
+    public Page<Product> list(@RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "10") int size) {
+        return productService.listAll(PageRequest.of(page, size));
+    }
+
+    @GetMapping("/vendor/{vendorId}")
+    public Page<Product> listByVendor(@PathVariable Long vendorId,
+                                      @RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        return productService.findByVendor(vendorId, PageRequest.of(page, size));
+    }
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestHeader("X-User-Id") Long actingUserId,

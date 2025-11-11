@@ -19,11 +19,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/list")
-    public List<User> list() {
-        return userService.listAll();
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CreateUserDto dto) {
         User user = User.builder()
@@ -36,6 +31,11 @@ public class UserController {
                 .build();
         User saved = userService.createUser(user);
         return ResponseEntity.ok(saved);
+    }
+
+    @GetMapping("/list")
+    public List<User> list() {
+        return userService.listAll();
     }
 
     @GetMapping("/role/{role}")

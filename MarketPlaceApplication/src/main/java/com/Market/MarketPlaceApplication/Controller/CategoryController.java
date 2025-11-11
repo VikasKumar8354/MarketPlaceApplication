@@ -15,13 +15,14 @@ public class CategoryController {
         this.categoryRepository = categoryRepository;
     }
 
+    @PostMapping("/create")
+    public Category create(@RequestBody Category category) {
+        return categoryRepository.save(category);
+    }
+
     @GetMapping("/list")
     public List<Category> list() {
         return categoryRepository.findAll();
     }
 
-    @PostMapping("/create")
-    public Category create(@RequestBody Category category) {
-        return categoryRepository.save(category);
-    }
 }
