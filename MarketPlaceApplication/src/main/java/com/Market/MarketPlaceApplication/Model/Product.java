@@ -1,33 +1,44 @@
 package com.Market.MarketPlaceApplication.Model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 @Entity
+@Builder
 public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
+
+    @Column(length = 2000)
     private String description;
+
     private Double price;
+
     private Integer stock;
+
     private String imageUrl;
 
     @ManyToOne
     private Category category;
 
+    // which vendor created/owns this product
+    @ManyToOne
+    private User vendor;
+
     public Product() {}
 
-    public Product(Long id, String title, Double price, String description, Integer stock, String imageUrl, Category category) {
+    public Product(Long id, String title, String description, Double price, Integer stock, String imageUrl, Category category, User vendor) {
         this.id = id;
         this.title = title;
-        this.price = price;
         this.description = description;
+        this.price = price;
         this.stock = stock;
         this.imageUrl = imageUrl;
         this.category = category;
+        this.vendor = vendor;
     }
 
     public Long getId() {
@@ -70,6 +81,14 @@ public class Product {
         this.stock = stock;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public Category getCategory() {
         return category;
     }
@@ -78,11 +97,11 @@ public class Product {
         this.category = category;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public User getVendor() {
+        return vendor;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setVendor(User vendor) {
+        this.vendor = vendor;
     }
 }

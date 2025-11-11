@@ -7,23 +7,33 @@ import lombok.Builder;
 @Builder
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
-    private String password;
+
+    private String password; // plain for now; replace with hashing in production
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    // Vendor-specific fields (optional)
+    private String shopName;
+    private boolean vendorVerified;
 
     public User() {}
 
-    public User(Long id, String name, String email, String password) {
+    public User(Long id, String email, String name, String password, Role role, String shopName, boolean vendorVerified) {
         this.id = id;
-        this.name = name;
         this.email = email;
+        this.name = name;
         this.password = password;
+        this.role = role;
+        this.shopName = shopName;
+        this.vendorVerified = vendorVerified;
     }
 
     public Long getId() {
@@ -56,5 +66,29 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+    public boolean isVendorVerified() {
+        return vendorVerified;
+    }
+
+    public void setVendorVerified(boolean vendorVerified) {
+        this.vendorVerified = vendorVerified;
     }
 }

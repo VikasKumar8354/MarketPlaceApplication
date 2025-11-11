@@ -11,19 +11,20 @@ import java.util.List;
 @Builder
 public class Order {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     private User buyer;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
 
     private Double total;
+
     private String status;
-    private Instant createdAt = Instant.now();
+
+    private Instant createdAt;
 
     public Order () {}
 
